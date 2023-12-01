@@ -1,0 +1,49 @@
+<header>
+  <nav>
+    <ul>
+    <%= for num <- 1..25 do %>
+      <li><a href={"/solutions/#{num}"}><%= num %></a></li>
+    <%= end %>
+    </ul>
+  </nav>
+</header>
+
+<section class="phx-hero">
+  <h1>Solutions for Day <%= @day %></h1>
+</section>
+
+<section class="">
+  <h1>Part One:</h1>
+  <%= @count_part_one %>
+  <p class="hey">
+    <%= for row <- @grid_part_one do %>
+      <p>
+      <%= for cell <- row do %>
+        <%= if cell == "X" do %>
+          <span style="color:red; font-weight:bold;">X</span>
+        <%= else %>
+          <span style="color:black; font-weight:bold;">X</span>
+        <%= end %>
+      <%= end %>
+      </p>
+    <%= end %>
+
+  </p>
+
+  <h1>Part Two:</h1>
+  <%= @count_part_two %>
+  <p class="hey">
+    <%= for row <- @grid_part_two do %>
+      <p>
+      <%= for cell <- row do %>
+        <%= if cell == "X" do %>
+          <span style="color:red; font-weight:bold;">X</span>
+        <%= else %>
+          <span style="color:black; font-weight:bold;">X</span>
+        <%= end %>
+      <%= end %>
+      </p>
+    <%= end %>
+
+  </p>
+</section>

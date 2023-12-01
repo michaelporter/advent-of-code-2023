@@ -1,0 +1,13 @@
+version: '3'
+services:
+    advent-app:
+        # container_name: 
+        image: advent-1
+        restart: always
+        build: .
+        ports: 
+            - '4000:4000'
+        volumes:
+            - ./advent:/elixir-app/advent
+        environment:
+            - ADVENT_SESSION_ID=$ADVENT_SESSION_ID
