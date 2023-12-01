@@ -1,6 +1,6 @@
 # Advent
 
-Repo for Phoenix App that contains Advent of Code Solutions for 2022.
+Repo for Phoenix App that contains Advent of Code Solutions for 2023.
 
 Running it via docker-compose:
 

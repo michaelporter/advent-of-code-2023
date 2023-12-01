@@ -1,7 +1,7 @@
 defmodule Advent.InputFetcher do
   def fetch_for_day(day_num, parser_fn) do
     session_id = System.get_env("ADVENT_SESSION_ID")
-    uri = "https://adventofcode.com/2022/day/#{day_num}/input"
+    uri = "https://adventofcode.com/2023/day/#{day_num}/input"
     headers = %{ 'Cookie' => "session=#{session_id}" }
 
     case HTTPoison.get(uri, headers) do
