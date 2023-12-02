@@ -11,37 +11,29 @@ defmodule Advent.Solution.Day2 do
         end)
       end)
     end)
-    |> Enum.reduce(0, fn game, sum ->
-      sum + game.game
-    end)
+    |> Enum.reduce(0, &(&1.game + &2))
   end
 
   ###
 
   def part_two do
-    get_problem_input()
-    |> Enum.reduce(0, fn game, pow_sum ->
-      game_power = Enum.reduce(game.handfuls, %{red: 0, green: 0, blue: 0}, fn handful, min_colors ->
-        local_min = Enum.reduce(handful, %{red: 0, green: 0, blue: 0 }, fn {color, count}, local_min_colors ->
-          if count > local_min_colors[color] do
-            Map.put(local_min_colors, color, count)
-          end
-        end)
-        |> Enum.into(%{})
+    Advent.InputFetcher.fetch_for_day(2, &alt_parse_response_body/1)
+    |> Enum.reduce(%{}, fn row, game_minimum_colors ->
+      current_mins = game_minimum_colors[row.game_num]
+      trimmed_row = Map.drop(row, [:game_num])
 
-        Enum.map(local_min, fn {color, count} ->
-          if count > min_colors[color] do
-            {color, count}
-          else
-            {color, min_colors[color]}
-          end
-        end) |> Enum.into(%{})
-      end)
-      |> Enum.reduce(1, fn {_, count}, pow ->
-         count * pow
-      end)
-
-      pow_sum + game_power
+      if current_mins do
+        Map.put(game_minimum_colors, row.game_num, Map.merge(current_mins, trimmed_row, fn _, old, new ->
+          if old > new, do: old, else: new
+        end))
+      else
+        Map.put_new(game_minimum_colors, row.game_num, trimmed_row)
+      end
+    end)
+    |> Enum.reduce(0, fn {_, color_minimums}, total_power ->
+      Map.values(color_minimums)
+      |> Enum.reduce(1, &(&1 * &2))
+      |> Kernel.+(total_power)
     end)
   end
 
@@ -66,7 +58,30 @@ defmodule Advent.Solution.Day2 do
 
       %{ game: String.to_integer(game_num), handfuls: handfuls, input: game }
     end)
+  end
 
+  defp alt_parse_response_body(body) do
+    String.trim_trailing(body)
+    |> String.split("\n", trim: true)
+    |> extract_game_data
+  end
+
+  defp extract_game_data(rows) do
+    Enum.reduce(rows, [], fn game, listed_handfuls ->
+      [game_string, cubes] = String.split(game, ": ")
+      [_, game_num] = String.split(game_string, " ")
+
+      String.split(cubes, "; ")
+      |> Enum.map(fn handful ->
+        String.split(handful, ", ")
+        |> Enum.reduce(%{}, fn h, color_counts ->
+          [num_str, color] = String.split(h, " ")
+          Map.put_new(color_counts, String.to_atom(color), String.to_integer(num_str))
+        end)
+        |> Map.put_new(:game_num, String.to_integer(game_num))
+      end)
+      |> Kernel.++(listed_handfuls)
+    end)
   end
 
   defp get_problem_input do
