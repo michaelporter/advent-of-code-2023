@@ -3,7 +3,7 @@ services:
     advent-app:
         # container_name: 
         image: advent-1
-        restart: always
+        restart: "no"
         build: .
         ports: 
             - '4000:4000'
