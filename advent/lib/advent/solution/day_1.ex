@@ -19,7 +19,7 @@ defmodule Advent.Solution.Day1 do
   def part_two do
     get_problem_input()
     |> Enum.reduce(0, fn calibration_string, sum ->
-      calibration_number = extract_digits_from_number_words(calibration_string)
+      calibration_number = extract_word_digits(calibration_string)
       |> extract_literal_digits(calibration_string)
       |> Enum.sort(&sort_by_index/2)
       |> get_calibration_number
@@ -49,7 +49,7 @@ defmodule Advent.Solution.Day1 do
     end)
   end
 
-  defp extract_digits_from_number_words(calibration_string) do
+  defp extract_word_digits(calibration_string) do
     number_words = [
       "one",
       "two",
@@ -71,13 +71,6 @@ defmodule Advent.Solution.Day1 do
     end)
   end
 
-  defp sort_by_index(a, b) do
-    {_, index_a} = a
-    {_, index_b} = b
-
-    index_a < index_b
-  end
-
   defp number_word_int_str(number_word) do
     case number_word do
       "one" -> "1"
@@ -90,6 +83,13 @@ defmodule Advent.Solution.Day1 do
       "eight" -> "8"
       "nine" -> "9"
     end
+  end
+
+  defp sort_by_index(a, b) do
+    {_, index_a} = a
+    {_, index_b} = b
+
+    index_a < index_b
   end
 
   defp parse_response_body(body) do
