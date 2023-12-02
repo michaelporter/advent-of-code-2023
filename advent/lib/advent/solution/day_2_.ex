@@ -1,15 +1,5 @@
 defmodule Advent.Solution.Day2 do
 
-  # each game, its a random number of cubes of different colors
-  # a few times each game, elf takes out a random number of cubes and shows them to me
-
-  # Game X: num1 col1, num2 col2; num2 col2, num2 col1, num2 col3 ...
-
-  # based on the outcomes, which games would have been possible if
-  # the bag held 12 Red, 13 Green, and 14 Blue
-
-  # the answer to part 1 is the sum of the IDs of the games that would have been possible
-
   def part_one do
     max_colors = %{ red: 12, green: 13, blue: 14}
 
@@ -28,31 +18,44 @@ defmodule Advent.Solution.Day2 do
 
   ###
 
-  # what is the fewest number of cubes of each color that would
-  # make each game possible?
-  # the answer is the sum of each game's 'power', or the min color counts multiplied together
-
   def part_two do
-    #get_problem_input()
+    get_problem_input()
+    |> Enum.reduce(0, fn game, pow_sum ->
+      game_power = Enum.reduce(game.handfuls, %{red: 0, green: 0, blue: 0}, fn handful, min_colors ->
+        local_min = Enum.reduce(handful, %{red: 0, green: 0, blue: 0 }, fn {color, count}, local_min_colors ->
+          if count > local_min_colors[color] do
+            Map.put(local_min_colors, color, count)
+          end
+        end)
+        |> Enum.into(%{})
 
+        Enum.map(local_min, fn {color, count} ->
+          if count > min_colors[color] do
+            {color, count}
+          else
+            {color, min_colors[color]}
+          end
+        end) |> Enum.into(%{})
+      end)
+      |> Enum.reduce(1, fn {_, count}, pow ->
+         count * pow
+      end)
+
+      pow_sum + game_power
+    end)
   end
-
 
   ###
 
   defp parse_response_body(body) do
-    # body = "Game 3: 5 red, 9 blue, 1 green; 5 red; 11 red, 2 green, 8 blue; 2 green, 6 blue\nGame 4: 2 red, 5 green; 2 blue, 3 red, 3 green; 3 red, 2 blue; 8 green, 2 red"
     String.trim_trailing(body)
-    # |> String.split("\n\n")
     |> String.split("\n", trim: true)
     |> Enum.map(fn game ->
       [game_string, cubes] = String.split(game, ": ")
-
       [_, game_num] = String.split(game_string, " ")
 
       handfuls = String.split(cubes, "; ")
       |> Enum.map(fn handful ->
-        # "5 red, 9 blue, 1 green"
         String.split(handful, ", ")
         |> Enum.reduce(%{}, fn h, color_counts ->
           [num_str, color] = String.split(h, " ")
@@ -61,7 +64,7 @@ defmodule Advent.Solution.Day2 do
         end)
       end)
 
-      %{ game: String.to_integer(game_num), handfuls: handfuls }
+      %{ game: String.to_integer(game_num), handfuls: handfuls, input: game }
     end)
 
   end
